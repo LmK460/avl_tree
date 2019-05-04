@@ -179,7 +179,91 @@ PONT menor(PONT raiz){
 	return no1;
 }
 
+PONT remove_no(PONT raiz, int v){
+	if(raiz==NULL){
+		printf("Valor não pertence a árvore");
+		return NULL;
+	}
+	if(v < raiz->chave){
+		raiz->esquerda = remove_no(raiz->esquerda,v);
+		if ((altura(raiz->esquerda) - altura(raiz->direita)) == 2) {
+            if (v < raiz->esquerda->chave) {
+                raiz = direita(raiz);
+            }
+            else {
+                raiz = esquerdaDireita(raiz);
+            }
+        }
+	}
+	if(raiz->chave < v){
+		raiz->direita = remove_no(raiz->direita,v);
+		if ((altura(raiz->direita) - altura(raiz->esquerda)) == 2) {
+            if (v > raiz->direita->chave) {
+                raiz = esquerda(raiz);
+            }
+            else {
+                raiz = direitaEsquerda(raiz);
+            }
+        }
+    }    
+	raiz->h = max(altura(raiz->esquerda), altura(raiz->direita)) + 1;
+	
+	if(raiz->chave == v){
+		if((raiz->esquerda == NULL || raiz->direita == NULL)){
+			PONT oldnode = raiz;
+			if(raiz->esquerda != NULL){
+				raiz = raiz->esquerda;
+			}
+			else{
+				raiz = raiz->direita;
+			}
+			free(oldnode);
+		}
+		else{
+			PONT temp = menor(raiz->direita);
+			raiz->chave = temp->chave;
+			remove_no(raiz->direita,raiz->chave);
+			if(balanceamento_no(raiz)>=2){
+				if(altura(raiz->esquerda->direita) <= altura(raiz->esquerda->esquerda)){
+					raiz = direita(raiz);
+				}
+				else{
+					raiz = esquerdaDireita(raiz);
+				}
+			}
+		}
+		
+	}
+	
+	return raiz;
+}
 
 int balanceamento_no(PONT raiz){
 	return labs(altura(raiz->esquerda) - altura(raiz->direita));
+}
+
+int main()
+{
+    //PONT r = inicializa();
+    //r = criaNo(5);
+    PONT r = NULL;
+    r = insere(r, 5);
+    insere(r, 2);
+    insere(r, 10);
+    insere(r, 3);
+    insere(r, 4);
+    insere(r, 7);
+    preOrdem(r);
+    printf("\n");
+    emOrdem(r);
+    printf("\n");
+    posOrdem(r);
+    printf("\n");
+    exibeArvore(r);
+    printf("\n");
+    remove_no(r,2);
+    remove_no(r,3);
+    printf("\n");
+    exibeArvore(r);
+    return 0;
 }
